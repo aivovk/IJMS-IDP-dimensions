@@ -2,15 +2,18 @@ NUP Model
 
 This is a coarse-grained Brownian (overdamped Langevin) dynamics simulation code
 with optional implicit hydrodynamic interactions using the Rotne-Prager-Yamakawa
-tensor. The model is explained in detail in Chapter 2 Section 3 of [1].
+tensor. The model is explained in detail in Chapter 2 Section 3 of [1]. The
+program is not parallelized, but includes GPU device code which can speed up the
+operations involving the mobility matrix considerably, although the Makefile
+will need to be altered to enable it.
 
 The program is currently set up to simulate a single polymer but can be altered
 to simulate systems with multiple polymers and nanoparticles. The individual
 monomers/particles can have different properties such as LJ interaction radius,
 hydrodynamic radius, cohesiveness, and charge. Other properties of the
 simulation can be modified via a settings file. Extensive documentation is
-currently lacking and some parts of the code are outdated, both will be improved
-in the near future.
+currently lacking and some parts of the code are outdated/poorly designed, both
+will be improved in the near future.
 
 Dependencies:
 GSL

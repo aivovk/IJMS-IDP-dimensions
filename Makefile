@@ -33,13 +33,13 @@ nup_model_sfml: SFML=-lsfml-graphics -lsfml-window -lsfml-system -D SFML -lGL -l
 nup_model_sfml: obj/main.o.sfml $(OBJS)
 	$(CC) $(CFLAGS) -o $@ obj/main.o.sfml $(OBJS) $(SFML) $(GSL) $(MKL)
 
-obj/%.o : src/%.cpp src/%.h
+obj/%.o : src/%.cpp src/*.h
 	$(CC) $(CFLAGS) $(SFML) -c $< -o $@
 
 obj/main.o: src/main.cpp src/*.h
 	$(CC) $(CFLAGS) $(SFML) -c src/main.cpp -o $@
 
-obj/main.o.sfml:
+obj/main.o.sfml: src/main.cpp src/*.h
 	$(CC) $(CFLAGS) $(SFML) -c src/main.cpp -o $@
 
 clean:

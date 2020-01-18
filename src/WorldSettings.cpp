@@ -193,7 +193,7 @@ int WorldSettings::readSettingsFile(const char * fileName)
 int WorldSettings::addProperty(const char * property, const char * value)
 {
   if (strcmp(property, "nupFile") == 0)
-    WorldSettings::nupFile = "Nups/" + std::string(value);
+    WorldSettings::nupFile = value;
   else if (strcmp(property, "AAFile") == 0)
     WorldSettings::AAFile = value;
   else if (strcmp(property, "avgBondLength") == 0)

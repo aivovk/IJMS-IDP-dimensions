@@ -85,8 +85,6 @@ int main ( int argc, char** argv )
   TYPE_FLOAT realDT = WorldSettings::dt;
   World w;
     
-  TYPE_FLOAT lastTime = w.getTime();
-
   if (WorldSettings::outSetting == WorldSettings::FILE)
     {
       /* open the file for output */
@@ -100,8 +98,6 @@ int main ( int argc, char** argv )
       
       std::cout<<"Writing to: "<<filename<<std::endl;
       
-      TYPE_FLOAT lastTime = w.getTime();
-
       while (w.getStep() < WorldSettings::steps && isFinished != 1)
         {
 	  //w.resetDisplacementSquared();
@@ -152,9 +148,7 @@ int main ( int argc, char** argv )
 	     w.getStep() % WorldSettings::stepsBetweenSeparation ==0){
 	    w.saveSeparationIJ(WorldSettings::separationFile);
 	  }
-	  
-	  lastTime = w.getTime();
-	  
+	  	  
 	  if(WorldSettings::terminate)
 	    {
 	      //w.saveContactMap(WorldSettings::contactMapFile);
@@ -178,7 +172,6 @@ int main ( int argc, char** argv )
     } 
   else if (WorldSettings::outSetting == WorldSettings::SCREEN)
     {
-      TYPE_FLOAT rg2;
       Vector3D fc;
       
       #ifdef SFML
@@ -212,7 +205,7 @@ int main ( int argc, char** argv )
       TYPE_FLOAT rotateSpeed = 1;
 
       std::cout<<time(NULL)<<std::endl;
-      int iRotateCamera = 0;
+      //int iRotateCamera = 0;
       while(w.getStep() < WorldSettings::steps && isFinished != 1)
         {
 	  

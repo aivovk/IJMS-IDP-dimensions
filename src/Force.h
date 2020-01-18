@@ -8,7 +8,7 @@
   \brief Interparticle (bond, repulsive, cohesive, charged), random, and
   external forces
 
-  the selector functions chooses one of the options based on WorldSettings
+  the selector functions choose one of the options based on WorldSettings
   
   \todo size has BL units = sqrt(1.5) * SIM units ?
  */
