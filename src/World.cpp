@@ -452,7 +452,7 @@ TYPE_FLOAT World::simulate()
 	{
 	  if(charged[j] > charged[i] + 1)
 	    {
-	      force = forceDebye(WorldSettings::pbc.convertR(particles[charged[i]]->r
+	      force = forceCharge(WorldSettings::pbc.convertR(particles[charged[i]]->r
 							      -particles[charged[j]]->r,
 							      WorldSettings::bondLength),
 				 particles[charged[i]]->getCharge() * particles[charged[j]]->getCharge());
@@ -493,7 +493,7 @@ TYPE_FLOAT World::simulate()
 		
 		
 		force = hStrength *
-		  forceLJHydrophobic(WorldSettings::pbc.convertR(particles[hydrophobic[i]]->r
+		  forceCohesive(WorldSettings::pbc.convertR(particles[hydrophobic[i]]->r
 								 -particles[hydrophobic[*iterH]]->r,
 								 WorldSettings::bondLength),
 				     avgSize);
@@ -529,7 +529,7 @@ TYPE_FLOAT World::simulate()
 	      avgSize = WorldSettings::LJSize/WorldSettings::bondLength;
 	    }
 	  //if(*iter != i) //this check is already done when building the neighbour list
-	  force = forceLJRepulsive(WorldSettings::pbc.convertR(particles[i]->r
+	  force = forceRepulsive(WorldSettings::pbc.convertR(particles[i]->r
 							       -particles[*iter]->r,
 							       WorldSettings::bondLength),
 				   avgSize);
@@ -828,7 +828,7 @@ void World::fillCholeskyMatrix()
 	 &blas_cholesky_info);
 }
 
-void World::draw(TYPE_FLOAT scale)
+void World::draw(TYPE_FLOAT scale) const
 {
 #ifdef GL
   // center the polymer
@@ -1025,7 +1025,7 @@ Vector3D World::averageEndToEndVector()
     }
   return l / polymers.size();
 }
-Vector3D World::centreOfMass()
+Vector3D World::centreOfMass() const
 {
   Vector3D com = Vector3D();
   for(int i = 0 ; i < noOfParticles ; i++)

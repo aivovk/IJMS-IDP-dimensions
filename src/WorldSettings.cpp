@@ -14,7 +14,7 @@ std::string WorldSettings::AAFile;
 std::string WorldSettings::contactMapFile;
 std::string WorldSettings::checkpointFile;
 int WorldSettings::checkpointCounter;
-NormalDistribution * WorldSettings::nd;
+NormalDistribution * WorldSettings::normalDistribution;
 PeriodicBoundary WorldSettings::pbc;
 AA *WorldSettings::aaProperties;
 unsigned int WorldSettings::seed;
@@ -80,7 +80,7 @@ void WorldSettings::initialize(const char * fileName)
   //skipNeighbourUpdate = 1;
   //else
   //skipNeighbourUpdate = (int) (neighbourListBuffer * bondLength / MAX_FORCE);
-  nd = new NormalDistribution(NormalDistribution::GSL, seed);
+  normalDistribution = new NormalDistribution(seed);
   aaProperties = new AA(AAFile, avgBondLength);
   sqrt_dt = sqrt(WorldSettings::dt);
   maxFENELengthSquared = WorldSettings::feneLength 

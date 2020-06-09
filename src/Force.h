@@ -10,15 +10,18 @@
 
   the selector functions choose one of the options based on WorldSettings
   
-  \todo size has BL units = sqrt(1.5) * SIM units ?
+  r is the vector between the two particles
+  
+  All quantities use SIMULATION units except:
+  size has BL units = sqrt(1.5) * SIM units
  */
 
 //selector
 Vector3D forceBond(const Vector3D &r);
 //options
-Vector3D forceSpringHooke(const Vector3D &r);
-Vector3D forceSpringFENE(const Vector3D &r);
-Vector3D forceSpringExp(const Vector3D &r);
+Vector3D forceBondHooke(const Vector3D &r);
+Vector3D forceBondFENE(const Vector3D &r);
+Vector3D forceBondExp(const Vector3D &r);
 
 //random forces
 Vector3D noiseTerm(TYPE_FLOAT stddev);
@@ -32,23 +35,22 @@ Vector3D noiseTerm();
 Vector3D forceRepulsive(const Vector3D &r, TYPE_FLOAT size);
 //options
 Vector3D forceExpRepulsive(const Vector3D &r, TYPE_FLOAT size);
-Vector3D forceLennardJones(const Vector3D &r, TYPE_FLOAT size);
-Vector3D forceLJRepulsive(const Vector3D &r, TYPE_FLOAT size);
+Vector3D forceLJ86Repulsive(const Vector3D &r, TYPE_FLOAT size);
 Vector3D forceLJ126Repulsive(const Vector3D &r, TYPE_FLOAT size);
 Vector3D forceLJ96Repulsive(const Vector3D &r, TYPE_FLOAT size);
 
 //selector
-Vector3D forceHydrophobic(const Vector3D &r, TYPE_FLOAT size);
+Vector3D forceCohesive(const Vector3D &r, TYPE_FLOAT size);
 //options
-Vector3D forceLJHydrophobic(const Vector3D &r, TYPE_FLOAT size);
-Vector3D forceLJ126Hydrophobic(const Vector3D &r, TYPE_FLOAT size);
-Vector3D forceLJHydrophobicSameRange(const Vector3D &r, TYPE_FLOAT size);
+Vector3D forceLJ86Attractive(const Vector3D &r, TYPE_FLOAT size);
+Vector3D forceLJ126Attractive(const Vector3D &r, TYPE_FLOAT size);
+Vector3D forceLJ86AttractiveSameRange(const Vector3D &r, TYPE_FLOAT size);
 
 //selector
 Vector3D forceCharge(const Vector3D &r, TYPE_FLOAT charge);
 //options
-Vector3D forceCoulomb(const Vector3D &r, TYPE_FLOAT charge);
-Vector3D forceDebye(const Vector3D &r, TYPE_FLOAT charge);
+Vector3D forceChargeCoulomb(const Vector3D &r, TYPE_FLOAT charge);
+Vector3D forceChargeDebye(const Vector3D &r, TYPE_FLOAT charge);
 
 //external forces
 Vector3D forceExternal(const Vector3D &r, TYPE_FLOAT size);

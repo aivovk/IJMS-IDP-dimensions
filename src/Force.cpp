@@ -4,54 +4,54 @@
 Vector3D forceBond(const Vector3D &r)
 {
   if (WorldSettings::typeForceBond == WorldSettings::BOND_HOOKE)
-    return forceSpringHooke(r);
+    return forceBondHooke(r);
   else if (WorldSettings::typeForceBond == WorldSettings::BOND_EXP)
-    return forceSpringExp(r);
-  return forceSpringFENE(r);
+    return forceBondExp(r);
+  return forceBondFENE(r);
 }
 
-Vector3D forceHydrophobic(const Vector3D &r, TYPE_FLOAT size)
+Vector3D forceCohesive(const Vector3D &r, TYPE_FLOAT size)
 {
   if (WorldSettings::typeForceHydrophobic == WorldSettings::HYDROPHOBIC_NORMAL)
-    return forceLJHydrophobic(r, size);
-  return forceLJHydrophobicSameRange(r, size);
+    return forceLJ86Attractive(r, size);
+  return forceLJ86AttractiveSameRange(r, size);
 }
 
 Vector3D forceRepulsive(const Vector3D &r, TYPE_FLOAT size)
 {
   if (WorldSettings::typeForceRepulsive == WorldSettings::REPULSIVE_NORMAL)
-    return forceLJRepulsive(r, size);
+    return forceLJ86Repulsive(r, size);
   return forceLJ126Repulsive(r, size);
 }
 
 Vector3D forceCharge(const Vector3D &r, TYPE_FLOAT charge)
 {
   if (WorldSettings::typeForceCharge == WorldSettings::COULOMB)
-    return forceCoulomb(r, charge);
-  return forceDebye(r, charge);
+    return forceChargeCoulomb(r, charge);
+  return forceChargeDebye(r, charge);
 }
 
 /* implementations */
 
 /* Bond forces */
-Vector3D forceSpringHooke(const Vector3D &r)
+Vector3D forceBondHooke(const Vector3D &r)
 {
   return -r;
 }
 
-Vector3D forceSpringFENE(const Vector3D &r)
+Vector3D forceBondFENE(const Vector3D &r)
 {
   WorldSettings::totalCountFENE++;
   TYPE_FLOAT magSquared = r.magnitudeSquared();
   if (magSquared >= WorldSettings::maxFENELengthSquared)
     {
       WorldSettings::errorCountFENE++;
-      return forceSpringHooke(r);
+      return forceBondHooke(r);
     }
   return -r/(1-magSquared/WorldSettings::maxFENELengthSquared);
 }
 
-Vector3D forceSpringExp(const Vector3D &r)
+Vector3D forceBondExp(const Vector3D &r)
 {
   return -r*exp(r.magnitudeSquared()/WorldSettings::maxFENELengthSquared);
 }
@@ -69,27 +69,8 @@ Vector3D forceExpRepulsive(const Vector3D &r, TYPE_FLOAT size)
   return force;
 }
 
-/// \todo rename
-Vector3D forceLennardJones(const Vector3D &r, TYPE_FLOAT size)
-{
-    
-  TYPE_FLOAT r_mag_squared = r.magnitudeSquared();
-  TYPE_FLOAT c_squared = 3*size*size; //sqrt(3) if b_LJ = b_Spring
-  if (r_mag_squared > c_squared / 2) //b_LJ
-    return Vector3D();
-
-  TYPE_FLOAT forceMagnitude = 0.75*WorldSettings::eLJ
-    *(0.5*pow(c_squared/r_mag_squared, 4) - pow(c_squared/r_mag_squared,3));
- 
-  WorldSettings::totalCountLJ++;
-
-  Vector3D force = r * forceMagnitude/r_mag_squared;
-    
-  return force;
-}
-
 // !!! size is in BL units
-Vector3D forceLJRepulsive(const Vector3D &r, TYPE_FLOAT size)
+Vector3D forceLJ86Repulsive(const Vector3D &r, TYPE_FLOAT size)
 {
   TYPE_FLOAT r_mag_squared = r.magnitudeSquared();
   TYPE_FLOAT c_squared = 3*size*size; //sqrt(3) if b_LJ = b_Spring
@@ -141,7 +122,7 @@ Vector3D forceLJ126Repulsive(const Vector3D &r, TYPE_FLOAT size)
 
 /*** hydrophobic / cohesive forces ***/
 //!!! size is in BL units
-Vector3D forceLJHydrophobic(const Vector3D &r, TYPE_FLOAT size)
+Vector3D forceLJ86Attractive(const Vector3D &r, TYPE_FLOAT size)
 {
   TYPE_FLOAT r_mag_squared = r.magnitudeSquared();
   TYPE_FLOAT c_squared = 3*size*size;
@@ -156,7 +137,7 @@ Vector3D forceLJHydrophobic(const Vector3D &r, TYPE_FLOAT size)
   return force;
 }
 
-Vector3D forceLJ126Hydrophobic(const Vector3D &r, TYPE_FLOAT size)
+Vector3D forceLJ126Attractive(const Vector3D &r, TYPE_FLOAT size)
 {
   TYPE_FLOAT r_mag_squared = r.magnitudeSquared();
   TYPE_FLOAT c_squared = 3*size*size;
@@ -174,7 +155,7 @@ Vector3D forceLJ126Hydrophobic(const Vector3D &r, TYPE_FLOAT size)
   
 }
 
-Vector3D forceLJHydrophobicSameRange(const Vector3D &r, TYPE_FLOAT size)
+Vector3D forceLJ86AttractiveSameRange(const Vector3D &r, TYPE_FLOAT size)
 {
   TYPE_FLOAT r_mag_squared = r.magnitudeSquared() + 
     (1-size)*(1-size)*1.5 + 
@@ -192,12 +173,12 @@ Vector3D forceLJHydrophobicSameRange(const Vector3D &r, TYPE_FLOAT size)
 }
 
 /*** charged forces ***/
-Vector3D forceCoulomb(const Vector3D &r, TYPE_FLOAT charge)
+Vector3D forceChargeCoulomb(const Vector3D &r, TYPE_FLOAT charge)
 { 
   return WorldSettings::coulombStrength * charge * r / (r.magnitude() * r.magnitudeSquared());
 }
 
-Vector3D forceDebye(const Vector3D &r, TYPE_FLOAT charge)
+Vector3D forceChargeDebye(const Vector3D &r, TYPE_FLOAT charge)
 {
   TYPE_FLOAT l = WorldSettings::debyeLength;
   
@@ -209,9 +190,9 @@ Vector3D forceDebye(const Vector3D &r, TYPE_FLOAT charge)
 
 Vector3D noiseTerm(TYPE_FLOAT stddev)
 {
-  return Vector3D(stddev * WorldSettings::nd->unitNormal(),
-		  stddev * WorldSettings::nd->unitNormal(),
-		  stddev * WorldSettings::nd->unitNormal());
+  return Vector3D(stddev * WorldSettings::normalDistribution->generateUnitNormal(),
+		  stddev * WorldSettings::normalDistribution->generateUnitNormal(),
+		  stddev * WorldSettings::normalDistribution->generateUnitNormal());
 }
 
 Vector3D noiseTerm()
@@ -232,10 +213,8 @@ Vector3D forceExternal(const Vector3D &r, TYPE_FLOAT size)
 Vector3D forceExternalZWall(const Vector3D &r, TYPE_FLOAT size)
 {
   
-  return forceLJRepulsive(r-Vector3D(r.x, 
-				     r.y, 
-				     WorldSettings::offset + 200*WorldSettings::bondLength), 1) + forceLJRepulsive(r - Vector3D(r.x, r.y, WorldSettings::offset), 1);
-  
+  return forceRepulsive(r - Vector3D(r.x, r.y, WorldSettings::offset + 200 * WorldSettings::bondLength), size)
+    + forceRepulsive(r - Vector3D(r.x, r.y, WorldSettings::offset), size);
 }
 
 

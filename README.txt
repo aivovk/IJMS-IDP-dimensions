@@ -11,9 +11,7 @@ The program is currently set up to simulate a single polymer but can be altered
 to simulate systems with multiple polymers and nanoparticles. The individual
 monomers/particles can have different properties such as LJ interaction radius,
 hydrodynamic radius, cohesiveness, and charge. Other properties of the
-simulation can be modified via a settings file. Extensive documentation is
-currently lacking and some parts of the code are outdated/poorly designed, both
-will be improved in the near future.
+simulation can be modified via a settings file.
 
 Dependencies:
 GSL

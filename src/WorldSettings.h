@@ -152,7 +152,7 @@ class WorldSettings
   static std::string checkpointFile;
   static int checkpointCounter;
   
-  static NormalDistribution * nd;
+  static NormalDistribution * normalDistribution;
   static PeriodicBoundary pbc;
   static unsigned int seed;
   static AA * aaProperties;

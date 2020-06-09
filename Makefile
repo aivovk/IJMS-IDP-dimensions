@@ -10,6 +10,8 @@ CFLAGS = -Wall $(OPTIMIZE) #-Wl,--no-as-needed
 
 GSL=-lgsl -lm #-lgslcblas
 
+MKL_INC=-I${MKLROOT}/include
+
 MKL=-L${MKLROOT}/lib/intel64 -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core #-lpthread -ldl
 
 # for visualization
@@ -34,13 +36,13 @@ nup_model_sfml: obj/main.o.sfml $(OBJS)
 	$(CC) $(CFLAGS) -o $@ obj/main.o.sfml $(OBJS) $(SFML) $(GSL) $(MKL)
 
 obj/%.o : src/%.cpp src/*.h
-	$(CC) $(CFLAGS) $(SFML) -c $< -o $@
+	$(CC) $(CFLAGS) $(SFML) $(MKL_INC) -c $< -o $@
 
 obj/main.o: src/main.cpp src/*.h
-	$(CC) $(CFLAGS) $(SFML) -c src/main.cpp -o $@
+	$(CC) $(CFLAGS) $(SFML) $(MKL_INC) -c src/main.cpp -o $@
 
 obj/main.o.sfml: src/main.cpp src/*.h
-	$(CC) $(CFLAGS) $(SFML) -c src/main.cpp -o $@
+	$(CC) $(CFLAGS) $(SFML) $(MKL_INC) -c src/main.cpp -o $@
 
 clean:
 	rm *~ obj/*.o obj/main.o.sfml src/*~ nup_model_temp nup_model_sfml

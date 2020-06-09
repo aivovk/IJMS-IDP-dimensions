@@ -1,0 +1,21 @@
+# directories
+doc
+obj
+
+# emacs back-up files
+*~
+*/*~
+
+# old / compute canada versions
+Makefile_*
+modules_compute_canada.sh
+
+# rough notes
+*.org
+
+# output files
+cp*
+test*
+
+# executables
+nup_model_*

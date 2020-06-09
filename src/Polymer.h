@@ -6,7 +6,7 @@
 
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <omp.h>
+//#include <omp.h>
 
 #include "NormalDistribution.h"
 #include "CubeSpace.h"

@@ -14,7 +14,6 @@ class Matrix3
   // entries
   TYPE_FLOAT xx, xy, xz, yx, yy, yz, zx, zy, zz;
 
-  /* constructors */
   inline Matrix3():xx(0),
 			       xy(0),
 			       xz(0),
@@ -61,8 +60,7 @@ class Matrix3
 					   zy(r1.z*r2.y),
 					   zz(r1.z*r2.z) {};
 
-  // copy constructor
-  inline Matrix3(const Matrix3 & m):xx(m.xx),
+   inline Matrix3(const Matrix3 & m):xx(m.xx),
 				    xy(m.xy),
 				    xz(m.xz),
 				    yx(m.yx),
@@ -72,9 +70,6 @@ class Matrix3
 				    zy(m.zy),
 				    zz(m.zz) {};
 
-  /* operators */
-
-    // asignment
   inline Matrix3& operator=(const Matrix3 & m)
     {
       xx = m.xx;
@@ -227,7 +222,6 @@ inline Vector3D operator*(const Matrix3 & m, const Vector3D & r)
                    m.zx * r.x + m.zy * r.y + m.zz * r.z);
 };
 
-// output
 std::ostream & operator<<(std::ostream & out, const Matrix3 & m);
 
 #endif // MATRIX3_H

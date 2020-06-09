@@ -29,7 +29,7 @@ class World
   World();
   ~World();
 
-  void draw(TYPE_FLOAT scale);
+  void draw(TYPE_FLOAT scale) const;
   TYPE_FLOAT simulate();
 
   //measure
@@ -47,7 +47,7 @@ class World
   TYPE_FLOAT kirkwoodApproximation(); ///< DO NOT USE
   //Vector3D fixmanCorrection();
    
-  Vector3D centreOfMass(); ///< all particles
+  Vector3D centreOfMass() const; ///< all particles
   
   void resetDisplacementSquared();
   TYPE_FLOAT displacementSquared(int i); ///< of one monomer in last step
