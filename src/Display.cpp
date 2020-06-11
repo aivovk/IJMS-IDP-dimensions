@@ -96,7 +96,7 @@ void Display::draw(const World& world){
   glRotatef(xCameraAngle, 1, 0, 0);
   glRotatef(yCameraAngle, 0, 1, 0);
   
-  drawAxes();
+  //drawAxes();
 
   glPushMatrix();
   glScalef(1.0/cameraZoom,

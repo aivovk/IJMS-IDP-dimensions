@@ -688,7 +688,7 @@ void World::draw() const
 
   for (int i = 0; i < noOfParticles; i++)
     {
-      GLfloat radius = 0.75 * particles[i]->getHRadius();
+      GLfloat radius = 0.5 * particles[i]->getHRadius();
       if (particles[i]->getType() == NANO_PARTICLE)
 	glColor3f(1,0,1);
       else if (particles[i]->getHydrophobicity() > 0)
