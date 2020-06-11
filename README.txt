@@ -24,14 +24,15 @@ make nup_model_temp - with only file output
 
 To run:
 nup_model_* [FILE]
-- where file is the main settings file (see WorldSettings.h)
--if no command line argument is given, the default settings file
+- where [FILE] is the main settings file (see WorldSettings.h)
+- if no command line argument is given, the default settings file
 (WorldSettings.conf) in the same directory as the executable will be loaded
 
 Brief descriptions of the classes/files:
 main.cpp - initialization and FILE/SCREEN output
 AA - load Particle properties
 CubeSpace - cell list to find neighbouring Particles for interactions
+Display - events and drawing to an SFML window
 Force - definitions of bond, cohesive, repulsive, charge, noise, external forces
 Matrix3 - 3x3 Matrix
 NormalDistribution - wrapper for random number generation

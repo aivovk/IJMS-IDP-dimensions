@@ -71,7 +71,7 @@ class Polymer
   TYPE_FLOAT averageBondLengthSquared();
 
   /// draw white lines between adjacent monomers
-  void draw(TYPE_FLOAT scale);
+  void draw() const;
 
  protected:
  private:

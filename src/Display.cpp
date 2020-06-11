@@ -91,46 +91,45 @@ void Display::draw(const World& world){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  
-  // move back so that the entire polymer fits on the screen
+
   glTranslatef(xCameraPosition, yCameraPosition, -cameraZoom);
-  
   glRotatef(xCameraAngle, 1, 0, 0);
   glRotatef(yCameraAngle, 0, 1, 0);
   
   drawAxes();
-  
-  world.draw(cameraZoom);
+
+  glPushMatrix();
+  glScalef(1.0/cameraZoom,
+	   1.0/cameraZoom,
+	   1.0/cameraZoom);
+  world.draw();
+  glPopMatrix();
   
   window.display();
 }
 
 void initGL()
 {
-  //OpenGL
-  glClearDepth(1.f);
-  glClearColor(0.f, 0.f, 0.f, 0.f);
+  //glClearDepth(1.0);
+  //glClearColor(0.f, 0.f, 0.f, 0.f);
   glEnable(GL_DEPTH_TEST);
   //glDepthMask(GL_TRUE);
-  glDepthFunc(GL_LEQUAL);
+  //glDepthFunc(GL_LEQUAL);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  //Enable Lighting
+  //Enable Lighting with defaults
+  glEnable(GL_COLOR_MATERIAL);
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
-  glEnable(GL_NORMALIZE);
-  GLfloat lightpos[] = {1., 1., 1., 0.};
-  glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
-  double amb = .3;
-  GLfloat global_ambient[] = {amb,amb,amb, 0.1};
-  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+  //glEnable(GL_NORMALIZE);
+  GLfloat lightDiffuse[4] = {0.3f, 0.3f, 0.3f, 1.0f};
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
   
-  //120 is the viewing angle
-  //10000 is the max draw distance
-  //#ifdef SFML
-  gluPerspective(120.f, 1.33f, 1.f, 10000.f);
-  //#endif
+  gluPerspective(120.f, // FOV
+		 1.33f, // aspect ratio
+		 0.1f, // min draw distance
+		 10000.f); // max draw distance
 }
 
 void drawAxes(){

@@ -159,15 +159,62 @@ bool Polymer::distanceCheck(Vector3D r)
   return true;
 }
 
-void Polymer::draw(TYPE_FLOAT scale)
-{
+void Polymer::draw() const {
 #ifdef GL
-  //draw lines between the monomers
-  glBegin(GL_LINE_STRIP);
-  for (int i = 0; i < noOfMonomers; i++)
+  GLUquadricObj* pQuadric = gluNewQuadric();
+  int numSlices = 10;
+  int numStacks = 10;
+  GLfloat bondRadius = 0.2;
+
+  for (int i = 0; i < noOfMonomers - 1; i++)
     {
-      glVertex3f(chain[i].r.x/scale, chain[i].r.y/scale, chain[i].r.z/scale);
+      glPushMatrix();
+      glTranslatef(chain[i].r.x, 
+		   chain[i].r.y, 
+		   chain[i].r.z);
+      
+      Vector3D bondVector = chain[i+1].r-chain[i].r;
+      
+      /* Draw a cylinder along the direction of the bond vector
+       *
+       * Before the call to gluCylinder, we need to rotate from (0,0,1) to the
+       * bondVector
+       * 
+       * Naive implementation breaks in several cases, so used:
+       * https://github.com/curran/renderCyliner/blob/master/renderCylinder.c
+       */
+      
+      GLfloat rotAngle;// = acos(bondVector.z/bondVector.magnitude()) * 180.0 / M_PI;
+      // vector to rotate around
+      GLfloat rotX = - bondVector.y / bondVector.z;
+      GLfloat rotY = bondVector.x / bondVector.z;
+      GLfloat rotZ = 0;
+      
+      if (fabs(bondVector.z) < 1.0e-3) {
+	rotAngle = acos( bondVector.x / bondVector.magnitude() ) * 180.0 / M_PI; 
+	if ( bondVector.y <= 0.0 )
+	  rotAngle = - rotAngle;
+	glRotatef(90.0, 0.0, 1, 0.0);
+	glRotatef(rotAngle, -1.0, 0.0, 0.0); 
+      }
+      else {
+	rotAngle = acos( bondVector.z / bondVector.magnitude() ) * 180.0 / M_PI;
+	if ( bondVector.z <= 0.0 )
+	  rotAngle = -rotAngle;
+	glRotatef(rotAngle, rotX, rotY, rotZ);
+      }
+	
+      gluCylinder(pQuadric,
+		  bondRadius,
+		  bondRadius,
+		  bondVector.magnitude(),
+		  numSlices,
+		  numStacks);
+
+      glPopMatrix();
+      
+      //glVertex3f(chain[i].r.x/scale, chain[i].r.y/scale, chain[i].r.z/scale);
     }
-  glEnd();
+  free(pQuadric);
 #endif
 }

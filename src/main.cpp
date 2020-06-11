@@ -93,7 +93,7 @@ int main ( int argc, char** argv )
 	  if(WorldSettings::stepsBetweenSnapshot > 0 &&
 	     world.getStep() % WorldSettings::stepsBetweenSnapshot ==0){
 	    world.savePositions(); 
-	    world.saveStateBinaryFast(WorldSettings::snapshotFile);
+	    world.writeStateBinaryFast(WorldSettings::snapshotFile);
 	  }
 	  
 	  if(world.getStep() % WorldSettings::stepsBetweenFileOutput == 0)
@@ -132,22 +132,22 @@ int main ( int argc, char** argv )
 
 	  if(WorldSettings::stepsBetweenSeparation > 0 &&
 	     world.getStep() % WorldSettings::stepsBetweenSeparation ==0){
-	    world.saveSeparationIJ(WorldSettings::separationFile);
+	    world.writeSeparationIJ(WorldSettings::separationFile);
 	  }
 	  	  
 	  if(WorldSettings::terminate)
 	    {
 	      //world.saveContactMap(WorldSettings::contactMapFile);
-	      world.saveSeparationIJ(WorldSettings::separationFile);
+	      world.writeSeparationIJ(WorldSettings::separationFile);
 	      world.savePositions();
-	      world.saveStateBinary(WorldSettings::checkpointFile);
+	      world.writeStateBinary(WorldSettings::checkpointFile);
 	      isFinished = 1;
 	    }
           if(WorldSettings::saveCheckpoint)
 	    {
 	      //world.saveContactMap(WorldSettings::contactMapFile);
 	      world.savePositions();
-	      world.saveStateBinary(WorldSettings::checkpointFile);
+	      world.writeStateBinary(WorldSettings::checkpointFile);
 	      WorldSettings::saveCheckpoint = false;
 	    }
 	  
@@ -179,13 +179,13 @@ int main ( int argc, char** argv )
 	  if(WorldSettings::terminate)
 	    {
 	      world.savePositions();
-	      world.saveStateBinary(WorldSettings::checkpointFile);
+	      world.writeStateBinary(WorldSettings::checkpointFile);
 	      isFinished = 1;
 	    }
 	  if(WorldSettings::saveCheckpoint)
 	    {
 	      world.savePositions();
-	      world.saveStateBinary(WorldSettings::checkpointFile);
+	      world.writeStateBinary(WorldSettings::checkpointFile);
 	      WorldSettings::saveCheckpoint = false;
 	    }
         }
@@ -197,9 +197,9 @@ int main ( int argc, char** argv )
    *  at the last file write (will not work with SCREEN)
    */
   if(!WorldSettings::terminate){
-    world.saveSeparationIJ(WorldSettings::separationFile);
+    world.writeSeparationIJ(WorldSettings::separationFile);
     world.savePositions();
-    world.saveStateBinary(WorldSettings::checkpointFile);
+    world.writeStateBinary(WorldSettings::checkpointFile);
   }
 
   delete WorldSettings::normalDistribution;

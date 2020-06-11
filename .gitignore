@@ -14,7 +14,7 @@ modules_compute_canada.sh
 *.org
 
 # output files
-cp*
+checkpoint*
 test*
 
 # executables

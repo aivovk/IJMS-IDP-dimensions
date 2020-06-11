@@ -1,7 +1,6 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <assert.h>
 #include <mkl.h>
 #include <sys/time.h>
 #include <time.h>
@@ -21,6 +20,9 @@
 #include "PeriodicBoundary.h"
 #include "WorldSettings.h"
 
+// indexing 2D BLAS arrays
+#define i2d(i,j,ld) (((j)*(ld))+(i))
+
 int timeval_subtract (double *result, struct timeval *x, struct timeval *y);
 
 class World
@@ -29,7 +31,7 @@ class World
   World();
   ~World();
 
-  void draw(TYPE_FLOAT scale) const;
+  void draw() const;
   TYPE_FLOAT simulate();
 
   //measure
@@ -68,11 +70,11 @@ class World
   std::vector<TYPE_FLOAT> * getRadialMonomerDensity(){return &radialDensityHistogram;};
   
   void savePositions();
-  void saveContactMap(std::string filename);
-  void saveSeparationIJ(std::string filename);
-  void saveState(std::string filename);
-  void saveStateBinary(std::string filename);
-  void saveStateBinaryFast(std::string filename);
+  void writeContactMap(std::string filename);
+  void writeSeparationIJ(std::string filename);
+  void writeState(std::string filename);
+  void writeStateBinary(std::string filename);
+  void writeStateBinaryFast(std::string filename);
   void loadState(std::string filename);
   void loadStateBinary(std::string filename);
   bool isStateSaved(){return stateSaved;};
