@@ -50,27 +50,27 @@ class Polymer
      self-avoiding check (used to determine initial conditions)
      Note: uses bond length distance instead of particle diameter
      \param r distance between two monomers
-     \return true if the particles overlap
+     \return true if the particles don't overlap
   */
-  bool distanceCheck(Vector3D r);
+  bool isSelfAvoiding(Vector3D r) const;
 
   /// calculate the change in position due to bond forces
   void simulate(TYPE_FLOAT t);
   
   /// vector from first to last monomer
-  Vector3D endToEndVector();
+  Vector3D endToEndVector() const;
 
-  TYPE_FLOAT endToEndDistanceSquared();
+  TYPE_FLOAT endToEndDistanceSquared() const;
 
 
   /// average of monomer positions (assuming same masses)
-  Vector3D centreOfMass();
+  Vector3D centreOfMass() const;
 
-  TYPE_FLOAT radiusOfGyrationSquared();
+  TYPE_FLOAT radiusOfGyrationSquared() const;
 
-  TYPE_FLOAT averageBondLengthSquared();
+  TYPE_FLOAT averageBondLengthSquared() const;
 
-  /// draw white lines between adjacent monomers
+  /// draw cylinders lines between adjacent monomers
   void draw() const;
 
  protected:
@@ -78,7 +78,7 @@ class Polymer
   int noOfMonomers;
 
   // positions of the monomers
-  std::vector<Particle> chain;
+  std::vector<Particle> monomers;
 };
 
 #endif // POLYMER_H

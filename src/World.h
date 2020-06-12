@@ -94,8 +94,8 @@ class World
   //CubeSpace csCharged;
 
   std::vector<Polymer *> polymers;
-  std::vector< std::vector< int > > * neighboursRepulsive;
-  std::vector< std::vector< int > > * neighboursCohesive;
+  std::vector< std::set< int > > * neighboursRepulsive;
+  std::vector< std::set< int > > * neighboursCohesive;
   //std::vector< std::set< int > > * neighboursCharged;
 
   //Hydrodynamic Interaction Matrices

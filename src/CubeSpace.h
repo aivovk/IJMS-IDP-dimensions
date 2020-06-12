@@ -31,55 +31,39 @@
 class CubeSpace
 {
  public:
-  CubeSpace();
-  CubeSpace(int length, std::vector<Particle *> * particles, TYPE_FLOAT cubeSize_);
-  ~CubeSpace();
+  CubeSpace(){};
+  CubeSpace(int length, TYPE_FLOAT cubeSize, int noOfParticles);
   
   /// place all particles into the cubes
-  void update();
+  void update(const std::vector<Particle *>& particles);
 
-  /// remove all particles from the cubes
-  void clear();
+  /// remove all particles from the cubes, must be called before particle
+  /// positions are changed and next update
+  void clear(const std::vector<Particle *>& particles);
   
   /// compute a list of indices of neighbouring particles for each particle
-  std::vector< std::vector<int> > * getNeighbours();
+  std::vector< std::set<int> > * getNeighbours(const std::vector<Particle *>& particles);
   
   
  protected:
  private:
-
   static const int stencil[14][3];
-  
-  // helper variables used in getNeighbours
-  std::vector<int>::iterator iter;
-  std::vector<int> * cube;
-  int ix, iy, iz;
-  int bx, by, bz;
 
-  /// temporary pointer to list of particles in a cube used in clear and update
-  std::vector<int> ** cube_;
-
-  int noOfParticles;
-  int length; ///< number of smaller cubes in 1 dimension
   int xLength;
   int yLength;
   int zLength;
   TYPE_FLOAT cubeSize; ///<
-
-  /// list of particle coordinates
-  std::vector<Particle *> * particles;
+  int noOfParticles;
 
   /// array of cubes containing lists of particles within each
-  std::vector< std::vector< std::vector< std::vector<int> * > > > cubes;
+  std::vector< std::vector< std::vector< std::vector<int> > > > cubes;
 
   /// neighbour list for each particle
-  std::vector< std::vector< int > > neighbours;
+  std::vector< std::set< int > > neighbours;
 
   /// get list of particles within a cube pased on position
-  std::vector<int> ** getCube(Vector3D rParticle);
+  std::vector<int>& getCube(const Vector3D& rParticle);
 
-  /// get list of particles within a cube based on a single particle index
-  std::vector<int> ** getCube(int iParticle);
 };
 
 #endif // CUBESPACE_H

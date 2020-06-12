@@ -14,11 +14,8 @@ Polymer::Polymer(int noOfMonomers,
 {
   this->noOfMonomers = noOfMonomers;
   
-  chain.resize(noOfMonomers);
-  
-  //int counter = 0;
-  //int max_counter = 36;
-  
+  monomers.resize(noOfMonomers);
+   
   // calculate initial positions and create Particle array
   for (int i = noOfMonomers - 1; i > -1; i--)
     {
@@ -30,7 +27,7 @@ Polymer::Polymer(int noOfMonomers,
 
       Particle * next = NULL;
       if (i < noOfMonomers - 1)
-	next = &chain[i+1];
+	next = &monomers[i+1];
 
       // Particles arranged in a straight line
       if (WorldSettings::initialCondition == WorldSettings::IC_LINE) {
@@ -47,24 +44,23 @@ Polymer::Polymer(int noOfMonomers,
 	    do {
 	      valid = true;
 	      Vector3D step = noiseTerm(1);
-	      position = chain[i+1].r +
+	      position = monomers[i+1].r +
 		WorldSettings::bondLength * step / step.magnitude();
 
 	      for (int j = 2 ; valid && j + i < noOfMonomers ; j++)
-		if (distanceCheck(chain[i + j].r - position))
-		  valid = false;
+		valid = isSelfAvoiding(monomers[i + j].r - position);
 	    } while (!valid);
 	  }
 	  
 	  // Random Walk
 	  if (WorldSettings::initialCondition == WorldSettings::IC_RW) {
 	    Vector3D step = noiseTerm(1);
-	    position = chain[i+1].r +
+	    position = monomers[i+1].r +
 	      WorldSettings::bondLength * step / step.magnitude();
 	  }
 	}
       }
-      chain[i] = Particle(position,
+      monomers[i] = Particle(position,
 			  AMINO_ACID,
 			  sequence[i],
 			  next,
@@ -72,7 +68,7 @@ Polymer::Polymer(int noOfMonomers,
     }
   for(int i = 0; i < noOfMonomers; i++)
     {  
-      particles -> push_back(&(chain[i])); 
+      particles -> push_back(&(monomers[i])); 
     }
 }
 
@@ -80,56 +76,52 @@ Polymer::~Polymer()
 {
 }
 
-TYPE_FLOAT Polymer::endToEndDistanceSquared()
+TYPE_FLOAT Polymer::endToEndDistanceSquared() const
 {
-  Vector3D diff = chain[0].r - chain[noOfMonomers-1].r;
-  return diff*diff;
+  return (monomers[0].r - monomers[noOfMonomers-1].r).magnitudeSquared();
 }
 
-Vector3D Polymer::endToEndVector()
+Vector3D Polymer::endToEndVector() const
 {
-  if (noOfMonomers == 1)
+  if (noOfMonomers <= 1)
     return Vector3D();
-  return chain[noOfMonomers-1].r - chain[0].r;
+  return monomers[noOfMonomers-1].r - monomers[0].r;
 }
 
-Vector3D Polymer::centreOfMass()
+Vector3D Polymer::centreOfMass() const
 {
   Vector3D rCOM;
   for (int i = 0; i < noOfMonomers; i++)
     {
-      rCOM += chain[i].r;
+      rCOM += monomers[i].r;
     }
   return rCOM/noOfMonomers;
 }
 
-TYPE_FLOAT Polymer::radiusOfGyrationSquared()
+TYPE_FLOAT Polymer::radiusOfGyrationSquared() const
 {
   TYPE_FLOAT rGsquared = 0;
   Vector3D rCOM = centreOfMass();
   
   for (int i = 0; i < noOfMonomers; i++)
     {
-      rGsquared += (chain[i].r - rCOM)*(chain[i].r - rCOM);
+      rGsquared += (monomers[i].r - rCOM).magnitudeSquared();
     }
   return rGsquared/noOfMonomers;
 }
 
 /// \todo duplicate function in World
-TYPE_FLOAT Polymer::averageBondLengthSquared()
+TYPE_FLOAT Polymer::averageBondLengthSquared() const
 {
-  if (noOfMonomers == 1)
+  if (noOfMonomers <= 1)
     return 0;
-  Vector3D avg_b;
-  TYPE_FLOAT avg_b_sq = 0;
+  TYPE_FLOAT sumOfSquaredBondLength = 0;
   for (int i = 1; i < noOfMonomers; i++)
     {
-      avg_b += (chain[i].r - chain[i-1].r);
-      avg_b_sq += (chain[i].r - chain[i-1].r)*(chain[i].r - chain[i-1].r);
+      Vector3D bondVector = monomers[i].r - monomers[i-1].r;
+      sumOfSquaredBondLength += bondVector.magnitudeSquared();
     }
-  avg_b = avg_b/(noOfMonomers - 1);
-  avg_b_sq /= (noOfMonomers - 1);
-  return avg_b_sq;// - avg_b*avg_b;
+  return sumOfSquaredBondLength / (noOfMonomers - 1);
 }
 
 // check for fixed particle occurs in World, when positions are updated
@@ -137,26 +129,23 @@ void Polymer::simulate(TYPE_FLOAT t)
 {
   if (noOfMonomers > 1)
     {
-      chain[0].dr += forceBond(chain[0].r - chain[1].r);
+      monomers[0].dr += forceBond(monomers[0].r - monomers[1].r);
       for (int i = 1 ; i < noOfMonomers - 1 ; i++)
 	{
-	  chain[i].dr += forceBond(chain[i].r - chain[i+1].r) 
-	    + forceBond(chain[i].r - chain[i-1].r);
+	  monomers[i].dr += forceBond(monomers[i].r - monomers[i+1].r) 
+	    + forceBond(monomers[i].r - monomers[i-1].r);
         }
-      chain[noOfMonomers - 1].dr += forceBond(chain[noOfMonomers - 1].r
-					      - chain[noOfMonomers - 2].r);
+      monomers[noOfMonomers - 1].dr += forceBond(monomers[noOfMonomers - 1].r
+					      - monomers[noOfMonomers - 2].r);
     }
 }
 
 /// \todo should use Particle LJ radii
-bool Polymer::distanceCheck(Vector3D r)
+bool Polymer::isSelfAvoiding(Vector3D r) const
 {
-  TYPE_FLOAT r_mag_squared = r.magnitudeSquared();
-  TYPE_FLOAT frac_bondlength_squared = WorldSettings::bondLength
-    * WorldSettings::bondLength;
-  if (r_mag_squared > frac_bondlength_squared)
-    return false;
-  return true;
+  if (r.magnitude() > WorldSettings::bondLength)
+    return true;
+  return false;
 }
 
 void Polymer::draw() const {
@@ -169,11 +158,11 @@ void Polymer::draw() const {
   for (int i = 0; i < noOfMonomers - 1; i++)
     {
       glPushMatrix();
-      glTranslatef(chain[i].r.x, 
-		   chain[i].r.y, 
-		   chain[i].r.z);
+      glTranslatef(monomers[i].r.x, 
+		   monomers[i].r.y, 
+		   monomers[i].r.z);
       
-      Vector3D bondVector = chain[i+1].r-chain[i].r;
+      Vector3D bondVector = monomers[i+1].r-monomers[i].r;
       
       /* Draw a cylinder along the direction of the bond vector
        *
@@ -185,10 +174,9 @@ void Polymer::draw() const {
        */
       
       GLfloat rotAngle;// = acos(bondVector.z/bondVector.magnitude()) * 180.0 / M_PI;
-      // vector to rotate around
-      GLfloat rotX = - bondVector.y / bondVector.z;
-      GLfloat rotY = bondVector.x / bondVector.z;
-      GLfloat rotZ = 0;
+      Vector3D rotVector(- bondVector.y / bondVector.z,
+			 bondVector.x / bondVector.z,
+			 0);
       
       if (fabs(bondVector.z) < 1.0e-3) {
 	rotAngle = acos( bondVector.x / bondVector.magnitude() ) * 180.0 / M_PI; 
@@ -201,7 +189,7 @@ void Polymer::draw() const {
 	rotAngle = acos( bondVector.z / bondVector.magnitude() ) * 180.0 / M_PI;
 	if ( bondVector.z <= 0.0 )
 	  rotAngle = -rotAngle;
-	glRotatef(rotAngle, rotX, rotY, rotZ);
+	glRotatef(rotAngle, rotVector.x, rotVector.y, rotVector.z);
       }
 	
       gluCylinder(pQuadric,
@@ -212,8 +200,6 @@ void Polymer::draw() const {
 		  numStacks);
 
       glPopMatrix();
-      
-      //glVertex3f(chain[i].r.x/scale, chain[i].r.y/scale, chain[i].r.z/scale);
     }
   free(pQuadric);
 #endif

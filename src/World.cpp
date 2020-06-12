@@ -221,26 +221,26 @@ World::World()
   //  cParticles.push_back(particles[charged[i]]);
   
   csRepulsive = CubeSpace(2 * (int) sqrt(noOfParticles),
-			  &particles,
 			  WorldSettings::aaProperties->maxLJRadius()*2 
-			  + WorldSettings::neighbourListBuffer * WorldSettings::bondLength);
+			  + WorldSettings::neighbourListBuffer * WorldSettings::bondLength,
+			  particles.size());
   csCohesive = CubeSpace((int) sqrt(noOfParticles),
-			 &hParticles,
 			 WorldSettings::aaProperties->maxLJRadius()*2 * 
 			 WorldSettings::hydrophobicCutoff +
-			 WorldSettings::neighbourListBuffer * WorldSettings::bondLength);
-  //csCharged = CubeSpace(40, &rC, WorldSettings::bondLength * WorldSettings::debyeLength*3);
+			 WorldSettings::neighbourListBuffer * WorldSettings::bondLength,
+			 hParticles.size());
+  //csCharged = CubeSpace(40, WorldSettings::bondLength * WorldSettings::debyeLength*3, rC.size());
 
   
 
-  csRepulsive.update();
-  csCohesive.update();
+  csRepulsive.update(particles);
+  csCohesive.update(hParticles);
   //csCharged.update();
-  neighboursRepulsive = csRepulsive.getNeighbours();
-  neighboursCohesive = csCohesive.getNeighbours();
+  neighboursRepulsive = csRepulsive.getNeighbours(particles);
+  neighboursCohesive = csCohesive.getNeighbours(hParticles);
   //neighboursCharged = csCharged.getNeighbours();
-  csRepulsive.clear();
-  csCohesive.clear();
+  csRepulsive.clear(particles);
+  csCohesive.clear(hParticles);
   //csCharged.clear();
 }
 
@@ -329,14 +329,14 @@ TYPE_FLOAT World::simulate()
   #endif
   if (step%WorldSettings::skipNeighbourUpdate == 0)
     {
-      csRepulsive.update();
-      neighboursRepulsive = csRepulsive.getNeighbours();
-      csRepulsive.clear();
+      csRepulsive.update(particles);
+      neighboursRepulsive = csRepulsive.getNeighbours(particles);
+      csRepulsive.clear(particles);
 
       if (step >= WorldSettings::eqSteps - WorldSettings::skipNeighbourUpdate){
-	csCohesive.update();
-	neighboursCohesive = csCohesive.getNeighbours();
-	csCohesive.clear();
+	csCohesive.update(hParticles);
+	neighboursCohesive = csCohesive.getNeighbours(hParticles);
+	csCohesive.clear(hParticles);
       }
 
       //csCharged.update();
@@ -356,8 +356,8 @@ TYPE_FLOAT World::simulate()
   Vector3D force;
   TYPE_FLOAT hStrength;
   TYPE_FLOAT avgSize;
-  std::vector<int>::iterator iter;
-  std::vector<int>::iterator iterH;
+  std::set<int>::iterator iter;
+  std::set<int>::iterator iterH;
 
   //external force (not used)
   for (int i = 0; i < noOfParticles; i++)
@@ -722,7 +722,7 @@ void World::updateContactMap(TYPE_FLOAT realDT)
 	 < WorldSettings::bondLength * WorldSettings::bondLength * 4 * 4)
 	contactMap[i][j] = contactMap[i][j] + realDT;
   */
-  std::vector<int>::iterator iter;
+  std::set<int>::iterator iter;
   //using LJ neighbour list (shorter distance)
   for (int i = 0; i < noOfParticles; i++)
     {
